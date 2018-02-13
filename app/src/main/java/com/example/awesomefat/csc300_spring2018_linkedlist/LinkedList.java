@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.Gravity;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by awesomefat on 1/30/18.
@@ -22,32 +23,63 @@ public class LinkedList
         this.theContext = theContext;
     }
 
-    public int removeFront()
+    public int removeFront() throws Exception
     {
         //removes the front of the linked list, and updates the interface
         //and ultimately returns the int payload of the node that was removed.
-        Node n = this.head;
         if(this.head != null)
         {
+            Node node2Remove = this.head;
             this.head = this.head.getNextNode();
-            n.setNextNode(null);
-        }
-        return n;
-
-        this.linkedListContainer.removeViewAt(0); // removes the view at 0
-    }
-
-    public int removeEnd()
-    {
-        //removes the end of the linked list, and updates the interface
-        //and ultimately returns the int payload of the node that was removed.
-        if(head == null)
-        {
-            return head;
+            node2Remove.setNextNode(null);
+            this.linkedListContainer.removeViewAt(0); // removes the view at 0
+            return node2Remove.getPayload();
         }
         else
         {
-            
+            Toast.makeText(this.theContext, "List is Empty", Toast.LENGTH_SHORT).show();
+            throw new Exception("Empty List");
+        }
+    }
+
+    public int removeEnd() throws Exception
+    {
+        //removes the end of the linked list, and updates the interface
+        //and ultimately returns the int payload of the node that was removed.
+        if(this.head != null)
+        {
+            //traverse the list to find the node right before the last node
+            Node node2Remove = this.head;
+            while(node2Remove.getNextNode() != null)
+            {
+                node2Remove = node2Remove.getNextNode();
+            }
+            //we know that node2Remove points to the very last node
+            //find the node that points to node2Remove
+            if(node2Remove == this.head)
+            {
+                //we have a one list
+                this.head = null;
+            }
+            else
+            {
+                Node prevNode = this.head;
+                while(prevNode.getNextNode() != node2Remove)
+                {
+                    prevNode = prevNode.getNextNode();
+                }
+                //prevNode points to the node right before node2Remove
+                prevNode.setNextNode(null);
+
+            }
+            this.linkedListContainer.removeViewAt(this.linkedListContainer.getChildCount()-1);
+            return node2Remove.getPayload();
+        }
+        else
+        {
+            //we have an empty list
+            Toast.makeText(this.theContext,"Empty List", Toast.LENGTH_SHORT).show();
+            throw new Exception("Empty List");
         }
     }
 
@@ -99,6 +131,52 @@ public class LinkedList
             tv.setText("" + payload);
             tv.setGravity(Gravity.CENTER);
             this.linkedListContainer.addView(tv);
+        }
+    }
+
+    public void addAtIndex(int payload, int index)
+    {
+        int count = 1;
+
+        if(index == 0)
+        {
+            this.addFront(payload);
+        }
+        else if(index == count)
+        {
+            this.addEnd(payload);
+        }
+        else
+        {
+            count = count++;
+            Node n = new Node(payload);
+            Node nodeBefore = this.head;
+            Node nodeAt;
+
+            for(int i = 0; i < index - 1; i++)
+            {
+                nodeBefore = nodeBefore.getNextNode();
+            }
+            nodeAt = nodeBefore.getNextNode();
+            n.setNextNode(nodeAt);
+            nodeBefore.setNextNode(n);
+        }
+    }
+
+    public Node removeAtIndex(int index)
+    {
+        int count = 1;
+        if(index == 0)
+        {
+            this.removeFront();
+        }
+        else if(index == count)
+        {
+            this.removeEnd();
+        }
+        else
+        {
+
         }
     }
 
