@@ -15,12 +15,92 @@ public class LinkedList
     private Node head;
     private ViewGroup linkedListContainer;
     private Context theContext;
+    private int count;
 
     public LinkedList(ViewGroup linkedListContainer, Context theContext)
     {
         this.head = null;
+        this.count = 0;
         this.linkedListContainer = linkedListContainer;
         this.theContext = theContext;
+    }
+
+    public int length()
+    {
+        return this.count;
+    }
+
+    public void addAtIndex(int payload, int index) throws Exception
+    {
+        if(this.head == null && index == 0)
+        {
+            this.addFront(payload);
+        }
+        else if(this.head == null || index < 0 || index > this.count)
+        {
+            throw new Exception("Illegal Index!!!!!!");
+        }
+        else if(index == this.count)
+        {
+            this.addEnd(payload);
+        }
+        else
+        {
+            //we know we that the index is a legal index that is not the front or the end
+            Node n = new Node(payload);
+
+            Node currNode = this.head;
+            Node prevNode = null;
+            for(int i = 0; i < index; i++)
+            {
+                prevNode = currNode;
+                currNode = currNode.getNextNode();
+            }
+            n.setNextNode(currNode);
+            prevNode.setNextNode(n);
+
+            //update the interface
+            TextView tv = new TextView(this.theContext);
+            tv.setText("" + payload);
+            tv.setGravity(Gravity.CENTER);
+            this.linkedListContainer.addView(tv,index);
+            this.count++;
+        }
+    }
+
+    public int removeAtIndex(int index) throws Exception
+    {
+        if(this.head == null || index < 0 || index >= this.count)
+        {
+            throw new Exception("Illegal Index!!!!!!");
+        }
+        else
+        {
+            if(index == 0)
+            {
+                return this.removeFront();
+            }
+            else if(index == this.count-1)
+            {
+                return this.removeEnd();
+            }
+            else
+            {
+                //remove from the middle
+                Node node2Remove = this.head;
+                Node prevNode = null;
+                for(int i = 0; i < index; i++)
+                {
+                    prevNode = node2Remove;
+                    node2Remove = node2Remove.getNextNode();
+                }
+                prevNode.setNextNode(node2Remove.getNextNode());
+                node2Remove.setNextNode(null);
+                this.count--;
+                this.linkedListContainer.removeViewAt(index);
+                return node2Remove.getPayload();
+            }
+        }
     }
 
     public int removeFront() throws Exception
@@ -32,6 +112,7 @@ public class LinkedList
             Node node2Remove = this.head;
             this.head = this.head.getNextNode();
             node2Remove.setNextNode(null);
+            this.count--;
             this.linkedListContainer.removeViewAt(0); // removes the view at 0
             return node2Remove.getPayload();
         }
@@ -73,6 +154,7 @@ public class LinkedList
 
             }
             this.linkedListContainer.removeViewAt(this.linkedListContainer.getChildCount()-1);
+            this.count--;
             return node2Remove.getPayload();
         }
         else
@@ -104,6 +186,7 @@ public class LinkedList
         tv.setText("" + payload);
         tv.setGravity(Gravity.CENTER);
         this.linkedListContainer.addView(tv,0);
+        this.count++;
     }
 
     public void addEnd(int payload)
@@ -131,52 +214,7 @@ public class LinkedList
             tv.setText("" + payload);
             tv.setGravity(Gravity.CENTER);
             this.linkedListContainer.addView(tv);
-        }
-    }
-
-    public void addAtIndex(int payload, int index)
-    {
-        int count = 1;
-
-        if(index == 0)
-        {
-            this.addFront(payload);
-        }
-        else if(index == count)
-        {
-            this.addEnd(payload);
-        }
-        else
-        {
-            count = count++;
-            Node n = new Node(payload);
-            Node nodeBefore = this.head;
-            Node nodeAt;
-
-            for(int i = 0; i < index - 1; i++)
-            {
-                nodeBefore = nodeBefore.getNextNode();
-            }
-            nodeAt = nodeBefore.getNextNode();
-            n.setNextNode(nodeAt);
-            nodeBefore.setNextNode(n);
-        }
-    }
-
-    public Node removeAtIndex(int index)
-    {
-        int count = 1;
-        if(index == 0)
-        {
-            this.removeFront();
-        }
-        else if(index == count)
-        {
-            this.removeEnd();
-        }
-        else
-        {
-
+            this.count++;
         }
     }
 
